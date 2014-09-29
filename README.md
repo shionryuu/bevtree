@@ -19,7 +19,7 @@ lua example1.lua
 
 ## License
 
-bevtree is available under the [MIT License](https://github.com/shionryuu/bevtree/tree/master/MIT-License).
+bevtree is available under the [MIT License](https://github.com/ShionRyuu/bevtree/blob/master/LICENSE).
 
 ## Todo
 

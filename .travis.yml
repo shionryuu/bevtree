@@ -5,8 +5,15 @@ branches:
   only:
     - master
 
+before_script:
+  - ./travis.sh
+
+env:
+  - LUA_VERSION=master
+  - LUA_VERSION=5.2.3
+
 script:
-  - lua examples1.lua
+  - ./lua/lua examples1.lua
 
 # Notify if needed
 notifications:
