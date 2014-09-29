@@ -1,0 +1,17 @@
+language: erlang
+
+# Only watch the master branch
+branches:
+  only:
+    - master
+
+script:
+  - lua examples1.lua
+
+# Notify if needed
+notifications:
+  recipients:
+    - shionryuu@outlook.com
+  email:
+    on_success: change
+    on_failure: always
