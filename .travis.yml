@@ -6,7 +6,7 @@ branches:
     - master
 
 before_script:
-  - ./travis.sh
+  - sudo ./travis.sh
 
 env:
   - LUA_VERSION=master

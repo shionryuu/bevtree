@@ -1,6 +1,6 @@
 #bevtree - Behaviour tree
 
-[![Build Status](https://secure.travis-ci.org/shionryuu/bevtree.png?branch=master)](http://travis-ci.org/shionryuu/bevtree)
+[![Build Status](https://secure.travis-ci.org/ShionRyuu/bevtree.png?branch=master)](https://travis-ci.org/ShionRyuu/bevtree)
 
 Behaviour tree implementation in lua.
 
