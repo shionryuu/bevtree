@@ -14,7 +14,7 @@ env:
   - LUA_VERSION=5.2.3
 
 script:
-  - ./lua/lua examples1.lua
+  - ./lua/lua example1.lua
 
 # Notify if needed
 notifications:
