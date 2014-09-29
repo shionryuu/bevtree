@@ -455,26 +455,33 @@ end
 
 function BevNodeTerminal:doEnter(input)
     if type(self.onEnter) == "function" then
-        self.onEnter(input)
-    elseif self.onEnter ~= nil then
-        pcall(self.onEnter, input, output)
+        local status, _ = pcall(self.onEnter, input, output)
+        if not status then
+            logger:error(err)
+        end
     end
 end
 
 function BevNodeTerminal:doExecute(input, output)
     if type(self.onExecute) == "function" then
-        return self.onExecute(input, output)
-    elseif self.onEnter ~= nil then
-        return pcall(self.onExecute, input, output)
+        local status, result = pcall(self.onExecute, input, output)
+        if status then
+            return result and Finish or Executing
+        else
+            logger:error(err)
+            return Transition
+        end
     end
-    return Finish
+    logger:error("invalid onExecute " .. self.desc)
+    return Transition
 end
 
 function BevNodeTerminal:doExit(input, output)
     if type(self.onExit) == "function" then
-        self.onExit(input, output)
-    elseif self.onEnter ~= nil then
-        pcall(self.onExecute, input, output)
+        local status, _ = pcall(self.onExit, input, output)
+        if not status then
+            logger:error(err)
+        end
     end
 end
 
