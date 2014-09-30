@@ -166,7 +166,7 @@ end
 
 
 --[[
---
+-- Base Node
  ]]
 
 -- base node class
@@ -220,7 +220,11 @@ function BevNode:setActiveNode(node)
 end
 
 
--- priority selector(weight selector)
+--[[
+-- Control Node
+ ]]
+
+-- priority selector
 local BevNodePrioritySelector = class('BevNodePrioritySelector', BevNode)
 
 function BevNodePrioritySelector:initialize(config)
@@ -274,18 +278,61 @@ function BevNodeNonePrioritySelector:doEvaluate(input)
 end
 
 
+-- weight selector
+local BevNodeWeightSelector = class('BevNodeWeightSelector', BevNodePrioritySelector)
+
+function BevNodeWeightSelector:initialize(config)
+    BevNodePrioritySelector.initialize(self, config)
+    self.totalWeight = 0
+    self:initSelector()
+end
+
+function BevNodeWeightSelector:initSelector()
+    for i = 1, #self.childNodeList do
+        local noteWeight = self.childNodeList[i].weight
+        self.childNodeList[i].weight = type(noteWeiht) == "number" and noteWeight or 1
+        self.totalWeight = self.totalWeight + self.childNodeList[i].weight
+    end
+end
+
+function BevNodeWeightSelector:weightSelect()
+    if self.totalWeight > 0 then
+        local randWeight = math.random(1, self.totalWeight)
+        local currentWeight = 0
+        for i = 1, #self.childNodeList do
+            currentWeight = currentWeight + self.childNodeList[i].weight
+            if randWeight <= currentWeight then
+                return i
+            end
+        end
+    end
+    return InvalidIndex
+end
+
+function BevNodeWeightSelector:doEvaluate(input)
+    local weightIndex = self:weightSelect()
+    if self:checkIndex(weightIndex) then
+        if self.childNodeList[weightIndex]:evaluate(input) == true then
+            self.currentSelectIndex = weightIndex
+            return true
+        end
+    end
+    return false
+end
+
+
 -- random selector
 local BevNodeRandomSelector = class('BevNodeRandomSelector', BevNodePrioritySelector)
 
 function BevNodeRandomSelector:initialize(config)
-    BevNode.initialize(self, config)
+    BevNodePrioritySelector.initialize(self, config)
 end
 
 function BevNodeRandomSelector:doEvaluate(input)
     if #self.childNodeList >= 1 then
-        local RandomIndex = math.random(1, #self.childNodeList)
-        if self.childNodeList[RandomIndex]:evaluate(input) == true then
-            self.currentSelectIndex = RandomIndex
+        local randomIndex = math.random(1, #self.childNodeList)
+        if self.childNodeList[randomIndex]:evaluate(input) == true then
+            self.currentSelectIndex = randomIndex
             return true
         end
     end
@@ -402,7 +449,10 @@ function BevNodeLoop:doTransition(input)
 end
 
 
---
+--[[
+-- Action Node
+ ]]
+
 local BevNodeTerminal = class('BevNodeTerminal', BevNode)
 
 function BevNodeTerminal:initialize(config)
@@ -516,6 +566,7 @@ return {
     BevNode = BevNode,
     BevNodePrioritySelector = BevNodePrioritySelector,
     BevNodeNonePrioritySelector = BevNodeNonePrioritySelector,
+    BevNodeWeightSelector = BevNodeWeightSelector,
     BevNodeRandomSelector = BevNodeRandomSelector,
     BevNodeParallel = BevNodeParallel,
     BevNodeSequence = BevNodeSequence,
