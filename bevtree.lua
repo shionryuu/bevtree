@@ -243,16 +243,21 @@ function BevNodePrioritySelector:doEvaluate(input)
 end
 
 function BevNodePrioritySelector:doTick(input, output)
+    local isFinish = Finish
+
     if self:checkIndex(self.currentSelectIndex) and
             self:checkIndex(self.lastSelectIndex) and
             self.currentSelectIndex ~= self.lastSelectIndex then
         -- clear last
         self.lastSelectIndex = self.currentSelectIndex
     end
-    if self:checkIndex(self.currentSelectIndex) and
-            self.childNodeList[self.currentSelectIndex]:tick(input, output) == Finish then
-        self.lastSelectIndex = InvalidIndex
+    if self:checkIndex(self.currentSelectIndex) then
+        isFinish = self.childNodeList[self.currentSelectIndex]:tick(input, output)
+        if isFinish == Finish then
+            self.lastSelectIndex = InvalidIndex
+        end
     end
+    return isFinish
 end
 
 function BevNodePrioritySelector:doTransition(input)
@@ -359,13 +364,22 @@ function BevNodeSequence:doEvaluate(input)
 end
 
 function BevNodeSequence:doTick(input, output)
+    local isFinish = Finish
     if not self:checkIndex(self.currentSelectIndex) and self:checkIndex(1) then
         self.currentSelectIndex = 1
     end
-    if self:checkIndex(self.currentSelectIndex) and
-            self.childNodeList[self.currentSelectIndex]:tick(input, output) == Finish then
-        self.currentSelectIndex = self.currentSelectIndex + 1
+    if self:checkIndex(self.currentSelectIndex) then
+        isFinish = self.childNodeList[self.currentSelectIndex]:tick(input, output)
+        if isFinish == Finish then
+            self.currentSelectIndex = self.currentSelectIndex + 1
+            if self.currentSelectIndex == #self.childNodeList then
+                isFinish = Finish
+            else
+                isFinish = Executing
+            end
+        end
     end
+    return isFinish
 end
 
 function BevNodeSequence:doTransition(input)
